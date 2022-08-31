@@ -17,7 +17,7 @@ exports.placeOrder = asyncWrapper(async (req, res, next) => {
   const cart = await Cart.findById(cartId);
   const inventories = await Promise.all(
     productList.map((prod) => Inventory.findOne({ productId: prod.productId }))
-  ); // get all inventories needed for the order
+  ); // get all inventories needed for the order from the order product list
   const maxProductQuantity = process.env.MAX_PRODUCT_QUANTITY_PER_USER;
   inventories.forEach((inventory, index) => {
     if (productList[index].quantity > maxProductQuantity)

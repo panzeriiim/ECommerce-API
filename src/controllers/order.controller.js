@@ -34,14 +34,14 @@ exports.placeOrder = asyncWrapper(async (req, res, next) => {
   });
   Promise.all(inventories.map((inv) => inv.save()));
   const newOrder = await Order.create({ ...req.body, userId });
-  const cartUpdateList = cart.productList.filter((prod) => {
+  const cartUpdateProdList = cart.productList.filter((prod) => {
     const indexProd = productList.findIndex(
       (deleteProd) =>
-        deleteProd.productId.toString() === prod.productId.toString() //delete ordered products in cart
+        deleteProd.productId.toString() === prod.productId.toString() //loop through product list in user cart. Find if the current product is already added to the order or not
     );
-    return indexProd === -1;
+    return indexProd === -1;  // if not we will keep it and filter will add it to cartUpdateProdList
   });
-  cart.productList = cartUpdateList;
+  cart.productList = cartUpdateProdList;
   req.user.orderList.push(newOrder.id);
   await req.user.save();
   await cart.save();

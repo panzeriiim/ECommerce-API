@@ -52,7 +52,8 @@ exports.placeOrder = asyncWrapper(async (req, res, next) => {
 });
 exports.cancelOrder = asyncWrapper(async (req, res, next) => {
   const { id: userId } = req.user;
-  const deleteOrder = await Order.findOne({ userId, _id: req.params.id });
+  const { id: orderId } = req.params;
+  const deleteOrder = await Order.findOne({ userId, _id: orderId }); 
   if (!deleteOrder) return next(new AppError('the order is not exist', 404));
   const inventories = await Promise.all(
     deleteOrder.productList.map((prod) =>

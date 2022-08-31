@@ -10,12 +10,12 @@ const signToken = (userId) =>
   });
 const createSendToken = (user, res) => {
   const accessToken = signToken(user.id);
-  const cookieoption = {
+  const cookieOption = {
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
-  res.cookie('acessToken', accessToken, cookieoption);
+  if (process.env.NODE_ENV === 'production') cookieOption.secure = true;
+  res.cookie('acessToken', accessToken, cookieOption);
   res.json({
     status: 'success',
     accessToken,

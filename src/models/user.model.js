@@ -39,7 +39,6 @@ const userSchema = new mongoose.Schema(
     },
     OTP: String,
     OTPSendTime: Date,
-    OrderList: [mongoose.Schema.Types.ObjectId],
     Address: [
       {
         country: String,

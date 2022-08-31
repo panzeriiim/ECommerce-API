@@ -14,6 +14,7 @@ const createSendToken = (user, res) => {
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
   };
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
   res.cookie('acessToken', accessToken, cookieoption);
   res.json({
     status: 'success',
@@ -83,7 +84,6 @@ exports.getResetOTP = asyncWrapper(async (req, res, next) => {
   user.OTP = OTP;
   user.OTPSendTime = new Date();
   await user.save();
-  req.user = user;
 });
 exports.resetPassword = asyncWrapper(async (req, res, next) => {
   const { OTP, email, password } = req.body;

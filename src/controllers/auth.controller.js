@@ -87,6 +87,8 @@ exports.getResetOTP = asyncWrapper(async (req, res, next) => {
 });
 exports.resetPassword = asyncWrapper(async (req, res, next) => {
   const { OTP, email, password } = req.body;
+  if (!OTP || !email || !password)
+    return next(new AppError('There are some missing fileds', 401));
   const user = await User.findOne({ OTP, email });
   if (!user) return next(new AppError('Invalid OTP', 401));
   const currentTime = new Date();

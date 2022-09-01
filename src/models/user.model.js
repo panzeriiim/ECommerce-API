@@ -37,6 +37,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       minLength: [8, 'password must contain atleast 8 characters'],
     },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
+    },
     OTP: String,
     OTPSendTime: Date,
     Address: [

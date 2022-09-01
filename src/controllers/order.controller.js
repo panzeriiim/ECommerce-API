@@ -17,7 +17,7 @@ exports.placeOrder = asyncWrapper(async (req, res, next) => {
   const cart = await Cart.findById(cartId);
   const inventories = await Promise.all(
     productList.map((prod) => Inventory.findOne({ productId: prod.productId }))
-  ); // get all inventories needed for the order
+  ); // get all inventories needed for the order from the order product list
   const maxProductQuantity = process.env.MAX_PRODUCT_QUANTITY_PER_USER;
   inventories.forEach((inventory, index) => {
     if (productList[index].quantity > maxProductQuantity)
@@ -34,14 +34,14 @@ exports.placeOrder = asyncWrapper(async (req, res, next) => {
   });
   Promise.all(inventories.map((inv) => inv.save()));
   const newOrder = await Order.create({ ...req.body, userId });
-  const cartUpdateList = cart.productList.filter((prod) => {
+  const cartUpdateProdList = cart.productList.filter((prod) => {
     const indexProd = productList.findIndex(
       (deleteProd) =>
-        deleteProd.productId.toString() === prod.productId.toString() //delete ordered products in cart
+        deleteProd.productId.toString() === prod.productId.toString() //loop through product list in user cart. Find if the current product is already added to the order or not
     );
-    return indexProd === -1;
+    return indexProd === -1;  // if not we will keep it and filter will add it to cartUpdateProdList
   });
-  cart.productList = cartUpdateList;
+  cart.productList = cartUpdateProdList;
   req.user.orderList.push(newOrder.id);
   await req.user.save();
   await cart.save();
@@ -52,7 +52,8 @@ exports.placeOrder = asyncWrapper(async (req, res, next) => {
 });
 exports.cancelOrder = asyncWrapper(async (req, res, next) => {
   const { id: userId } = req.user;
-  const deleteOrder = await Order.findOne({ userId, _id: req.params.id });
+  const { id: orderId } = req.params;
+  const deleteOrder = await Order.findOne({ userId, _id: orderId }); 
   if (!deleteOrder) return next(new AppError('the order is not exist', 404));
   const inventories = await Promise.all(
     deleteOrder.productList.map((prod) =>

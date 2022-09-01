@@ -62,6 +62,13 @@ exports.autheticate = asyncWrapper(async (req, res, next) => {
   req.user = user;
   next();
 });
+exports.restrictPermission = (req, res, next) => {
+  if (req.user.role !== 'admin')
+    return next(
+      new AppError('You dont have permission to do this action', 401)
+    );
+  next();
+};
 exports.getResetOTP = asyncWrapper(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user)

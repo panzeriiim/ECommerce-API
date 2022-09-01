@@ -1,5 +1,8 @@
 const express = require('express');
-const { autheticate } = require('../controllers/auth.controller');
+const {
+  autheticate,
+  restrictPermission,
+} = require('../controllers/auth.controller');
 const {
   addProduct,
   deleteProductById,
@@ -9,9 +12,19 @@ const {
 
 const productRouter = express.Router();
 
-productRouter.get('/product', autheticate, getAllProducts);
-productRouter.post('/product', autheticate, addProduct);
-productRouter.patch('/product/:id', autheticate, updateProductById);
-productRouter.delete('/product/:id', autheticate, deleteProductById);
+productRouter.get('/product', getAllProducts);
+productRouter.post('/product', autheticate, restrictPermission, addProduct);
+productRouter.patch(
+  '/product/:id',
+  autheticate,
+  restrictPermission,
+  updateProductById
+);
+productRouter.delete(
+  '/product/:id',
+  autheticate,
+  restrictPermission,
+  deleteProductById
+);
 
 module.exports = productRouter;
